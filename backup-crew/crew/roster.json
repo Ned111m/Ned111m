@@ -42,6 +42,30 @@
       ]
     },
     {
+      "id": "storyteller",
+      "name": "Storyteller",
+      "model": "orchestrator",
+      "mirrors": [
+        "storyteller"
+      ],
+      "role": "Finds and writes the story before any structure: subject, stake, open question, turning points, emotional arc, payoff; a real shot for every beat; VO script or wordless telling plan.",
+      "tools": [
+        "search_footage",
+        "index_footage",
+        "detect_shots",
+        "web_search",
+        "web_fetch"
+      ],
+      "skills": [
+        "narrative-structure",
+        "narrative-editing-mastery",
+        "sp-brainstorming"
+      ],
+      "extra_mcp": [
+        "wikipedia"
+      ]
+    },
+    {
       "id": "creative-director",
       "name": "Creative Director",
       "model": "orchestrator",
@@ -445,13 +469,63 @@
       "id": "footage-librarian",
       "name": "Footage Librarian",
       "model": "orchestrator",
-      "mirrors": [],
+      "mirrors": [
+        "footage-librarian"
+      ],
       "new_seat": true,
       "role": "NEW SEAT. Searchable index of the raw library (1.28 TB, D:/E:): per-clip captions from real frames + qwen3-embedding vectors, so 'find me a sunrise over the Bosna river with fog' returns real clips and timecodes.",
       "tools": [
         "index_footage",
         "search_footage",
         "flight_quality"
+      ],
+      "skills": []
+    },
+    {
+      "id": "shoot-planner",
+      "name": "Shoot Planner",
+      "model": "orchestrator",
+      "mirrors": [
+        "shoot-planner"
+      ],
+      "role": "DP and drone flight planner: shot list per story beat, flight plans, light/weather from Open-Meteo, airspace/legal from primary sources.",
+      "tools": [
+        "search_footage",
+        "flight_quality",
+        "web_search",
+        "web_fetch"
+      ],
+      "skills": [
+        "sp-brainstorming"
+      ]
+    },
+    {
+      "id": "music-composer",
+      "name": "Music Composer",
+      "model": "orchestrator",
+      "mirrors": [
+        "music-composer"
+      ],
+      "role": "Original score via ACE-Step or licensed NCS/incompetech with credits; cue sheet on the story arc; beat grids. Never LEGION.",
+      "tools": [
+        "beat_grid",
+        "start_comfyui"
+      ],
+      "skills": [
+        "sound-design-craft",
+        "video-rhythm"
+      ]
+    },
+    {
+      "id": "subtitle-editor",
+      "name": "Subtitle & Localization Editor",
+      "model": "orchestrator",
+      "mirrors": [
+        "subtitle-localization-editor"
+      ],
+      "role": "Pinned-language transcription, word-timed BS/EN .srt, translated text cards, readability checks.",
+      "tools": [
+        "transcribe"
       ],
       "skills": []
     }
