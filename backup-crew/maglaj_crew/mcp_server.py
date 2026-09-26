@@ -684,6 +684,15 @@ def _pid_alive(pid) -> bool:
     return f'"{int(pid)}"' in r.stdout
 
 
+
+@mcp.tool()
+def wait(seconds: int = 60) -> dict:
+    """Pause inside the SAME turn (max 110 s, under the frontend call limit). Use it between check_agent_task / job_status
+    polls instead of ending your answer: e2e 2026-09-26 showed the supervisor ending the task with "I'll wait ~40 s"
+    because it had no way to wait, so delegated results never came back."""
+    s = max(1, min(int(seconds), 110)); time.sleep(s)
+    return {"waited_s": s, "next": "now check the task / job again; keep going until every delegated result is in"}
+
 # ---------------------------------------------------------------- health (why is it stuck?)
 @mcp.tool()
 def crew_health() -> dict:

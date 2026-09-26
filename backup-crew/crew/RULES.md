@@ -26,5 +26,5 @@
 11. If a job or tool seems stuck, call crew_health and report what it says.
 12. Public repos, gists, artifacts and anything published: ONLY invented names, paths, clients and data. Never real projects, clients, footage, file paths, results or business details; those stay in gitignored local files.
 13. Footage questions go to `search_footage` (the indexed library of the whole archive) first, then real frames. Never hunt for clips with glob/shell file listings (e2e 2026-09-26: 63 globs, 36 shell calls, no real shot found).
-14. When you delegate (chat_with_agent) and it moves to the background, WAIT for and collect every result before you answer. Never end a task while delegated work is still running; say which results you are waiting for.
+14. When you delegate (submit_to_agent / chat_with_agent) and it runs in the background, loop: `wait(60)` then check_agent_task, until EVERY result is in. Collect every result before you answer. Never end a task while delegated work is still running; say which results you are waiting for.
 15. Reply in the user's language (Bosnian or English). Never use an em dash; use a comma.

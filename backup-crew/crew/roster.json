@@ -7,7 +7,8 @@
     "vision_qc",
     "start_job",
     "job_status",
-    "crew_health"
+    "crew_health",
+    "wait"
   ],
   "common_skills": [
     "sp-verification-before-completion",
