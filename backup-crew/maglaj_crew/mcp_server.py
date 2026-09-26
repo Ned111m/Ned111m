@@ -640,11 +640,20 @@ def job_status(job_id: str, wait_s: int = 90) -> dict:
         time.sleep(3)
 
 
+def _read_job(p: Path) -> dict:
+    for _ in range(5):
+        try:
+            return json.loads(p.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, PermissionError):
+            time.sleep(0.2)
+    return json.loads(p.read_text(encoding="utf-8"))
+
+
 def _job_status_once(job_id: str) -> dict:
     p = JOBS / f"{job_id}.json"
     if not p.exists():
         return {"error": f"unknown job {job_id}"}
-    d = json.loads(p.read_text(encoding="utf-8"))
+    d = _read_job(p)
     if d.get("status") == "waiting_gpu":
         d["note"] = f"queued: the GPU is busy with {d.get('gpu_held_by')}; keep polling"
     if d.get("status") in ("running", "waiting_gpu", "queued") and d.get("started"):
@@ -658,7 +667,8 @@ def _job_status_once(job_id: str) -> dict:
             if lp.exists():
                 tail = lp.read_text(encoding="utf-8", errors="replace")[-2000:]
             d.update(status="error", error="job runner process died without a result", log_tail=tail)
-            p.write_text(json.dumps(d, ensure_ascii=False, default=str), encoding="utf-8")
+            tmp = p.with_suffix(f".status.{os.getpid()}.tmp")  # atomic: the runner may be writing too
+            tmp.write_text(json.dumps(d, ensure_ascii=False, default=str), encoding="utf-8"); tmp.replace(p)
     return d
 
 

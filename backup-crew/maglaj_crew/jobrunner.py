@@ -21,11 +21,18 @@ TIMEOUT_S = {"deliver_dnxhr": 4 * 3600, "master_audio": 3600, "index_footage": 6
 DEFAULT_TIMEOUT_S = 2 * 3600
 
 
+_WRITE_LOCK = threading.Lock()
+
+
 def _write(job_id: str, **kw) -> None:
-    p = JOBS / f"{job_id}.json"
-    d = json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
-    d.update(kw)
-    tmp = p.with_suffix(f".{os.getpid()}.tmp"); tmp.write_text(json.dumps(d, ensure_ascii=False, default=str), encoding="utf-8"); tmp.replace(p)
+    # The heartbeat thread and the main thread (waiting_gpu / status updates) both write this file. Without the lock
+    # they shared one tmp file and interleaved: a real corrupted job file ("}}") on 2026-09-26.
+    with _WRITE_LOCK:
+        p = JOBS / f"{job_id}.json"
+        d = json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
+        d.update(kw)
+        tmp = p.with_suffix(f".{os.getpid()}.{threading.get_ident()}.tmp")
+        tmp.write_text(json.dumps(d, ensure_ascii=False, default=str), encoding="utf-8"); tmp.replace(p)
 
 
 def main(job_id: str) -> None:
