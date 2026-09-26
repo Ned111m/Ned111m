@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "maglaj-crew"
+version = "0.1.0"
+description = "Dron Maglaj backup video production crew: local Ollama agents orchestrated with LangGraph, wired into QwenPaw, Claude Code Router and Open Interpreter."
+requires-python = ">=3.11"
+dependencies = [
+  "httpx>=0.27",
+  "pyyaml>=6",
+  "pydantic>=2.7",
+  "numpy>=1.26",
+  "langchain-core>=0.3",
+  "langchain-ollama>=0.3",
+  "langgraph>=0.4",
+  "mcp>=1.9",
+]
+
+[project.optional-dependencies]
+audio = ["librosa>=0.11", "soundfile>=0.12"]
+vision = ["opencv-python-headless>=4.10"]
+hands = ["open-interpreter>=0.4"]
+all = ["maglaj-crew[audio,vision]"]
+dev = ["pytest>=8"]
+
+[project.scripts]
+maglaj-crew = "maglaj_crew.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["maglaj_crew*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

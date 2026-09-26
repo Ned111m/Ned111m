@@ -1,0 +1,462 @@
+{
+  "_doc": "Backup crew seats. `mirrors` = first-team agent briefs (~/.claude/agents/<name>.md) loaded VERBATIM into the seat. `tools` = allowlist from the maglaj-crew MCP server (a local 30B model loses precision with hundreds of tools). `extra_mcp` = additional MCP servers this seat gets. `skills` = ~/.claude/skills folders enabled for the seat. `model` = key in crew_models.json.",
+  "common_tools": [
+    "probe",
+    "measure_loudness",
+    "sample_frames",
+    "vision_qc",
+    "start_job",
+    "job_status",
+    "crew_health"
+  ],
+  "common_skills": [
+    "sp-verification-before-completion",
+    "sp-systematic-debugging"
+  ],
+  "seats": [
+    {
+      "id": "supervisor",
+      "name": "Maglaj Supervisor",
+      "model": "orchestrator",
+      "mirrors": [
+        "video-production-supervisor"
+      ],
+      "role": "Runs the whole show: decomposes the job, delegates every stage to the right crew seat, enforces the measured QC gate, runs ONE batched fix loop.",
+      "tools": [
+        "qc_render",
+        "detect_shots",
+        "frame_defect_scan",
+        "repeat_shot_audit",
+        "validate_sources",
+        "deliver_dnxhr",
+        "scrim_scan",
+        "delivery_gate",
+        "temporal_scan"
+      ],
+      "skills": [
+        "sp-writing-plans",
+        "sp-executing-plans",
+        "sp-dispatching-parallel-agents",
+        "video-delivery-qc",
+        "narrative-structure"
+      ]
+    },
+    {
+      "id": "creative-director",
+      "name": "Creative Director",
+      "model": "orchestrator",
+      "mirrors": [
+        "creative-director",
+        "executive-producer"
+      ],
+      "role": "One-thesis structural brief before any cut (hook, spine, beat sheet, pacing contour, ending payoff); re-checks the finished render against it.",
+      "tools": [
+        "detect_shots",
+        "flight_quality",
+        "web_search",
+        "web_fetch"
+      ],
+      "skills": [
+        "narrative-structure",
+        "narrative-editing-mastery",
+        "video-rhythm",
+        "sp-brainstorming"
+      ],
+      "extra_mcp": [
+        "wikipedia"
+      ]
+    },
+    {
+      "id": "story-architect",
+      "name": "Story Architect",
+      "model": "orchestrator",
+      "mirrors": [
+        "story-architect"
+      ],
+      "role": "Rebuilds a video's whole structure when the running order itself is the problem.",
+      "tools": [
+        "detect_shots",
+        "web_search",
+        "web_fetch"
+      ],
+      "skills": [
+        "narrative-structure",
+        "narrative-editing-mastery"
+      ],
+      "extra_mcp": [
+        "wikipedia"
+      ]
+    },
+    {
+      "id": "content-strategist",
+      "name": "Content Strategist",
+      "model": "orchestrator",
+      "mirrors": [
+        "content-strategist",
+        "narration-format-strategist"
+      ],
+      "role": "Decides WHAT to make next from real channel data; recommends narrated vs silent format with evidence.",
+      "tools": [
+        "web_search",
+        "web_fetch"
+      ],
+      "extra_mcp": [
+        "yt-dlp",
+        "wikipedia"
+      ],
+      "skills": [
+        "trends-audience-analysis"
+      ]
+    },
+    {
+      "id": "master-editor",
+      "name": "Master Editor",
+      "model": "orchestrator",
+      "mirrors": [
+        "master-video-editor",
+        "documentary-editor"
+      ],
+      "role": "Cut logic, shot order, take selection, retention. Full adjacency pass on every cut.",
+      "tools": [
+        "detect_shots",
+        "flight_quality",
+        "repeat_shot_audit",
+        "validate_sources",
+        "transcribe"
+      ],
+      "skills": [
+        "narrative-editing-mastery",
+        "video-rhythm",
+        "transitions-craft",
+        "repeat-framing-audit",
+        "video-edit"
+      ]
+    },
+    {
+      "id": "pacing-rhythm",
+      "name": "Pacing and Rhythm",
+      "model": "orchestrator",
+      "mirrors": [
+        "pacing-rhythm-editor"
+      ],
+      "role": "Measures real cut rhythm: shot-duration contour, rush/drag, beat sync against beat_grid.",
+      "tools": [
+        "detect_shots",
+        "beat_grid"
+      ],
+      "skills": [
+        "video-rhythm"
+      ]
+    },
+    {
+      "id": "colorist",
+      "name": "Colorist",
+      "model": "orchestrator",
+      "mirrors": [
+        "dctl-colorist",
+        "broadcast-colorist"
+      ],
+      "role": "D-Log M grading, shot matching, DCTL/node recipes in Resolve; color-bible consistency.",
+      "tools": [
+        "color_pipeline_check"
+      ],
+      "extra_mcp": [
+        "davinci-resolve"
+      ],
+      "skills": [
+        "color-correction-craft"
+      ]
+    },
+    {
+      "id": "resolve-operator",
+      "name": "Resolve Operator",
+      "model": "orchestrator",
+      "mirrors": [
+        "resolve-conform-operator"
+      ],
+      "role": "The ONLY seat that writes to Resolve: timelines, clip placement, versions, Fusion, render queue.",
+      "tools": [
+        "detect_shots"
+      ],
+      "extra_mcp": [
+        "davinci-resolve"
+      ],
+      "skills": []
+    },
+    {
+      "id": "remotion-engineer",
+      "name": "Remotion Engineer",
+      "model": "code",
+      "mirrors": [
+        "remotion-motion-engineer"
+      ],
+      "role": "Builds and debugs Remotion compositions, timing, transitions, captions, renders in the project Remotion workspace.",
+      "tools": [
+        "check_vo_timing",
+        "qc_render",
+        "detect_shots",
+        "delivery_gate",
+        "temporal_scan"
+      ],
+      "skills": [
+        "remotion-best-practices",
+        "remotion-render",
+        "remotion-captions",
+        "remotion-create",
+        "remotion-docs"
+      ]
+    },
+    {
+      "id": "motion-graphics",
+      "name": "Motion Graphics",
+      "model": "code",
+      "mirrors": [
+        "vfx-motion-graphics-director",
+        "motion-graphics-editor"
+      ],
+      "role": "Hero 2D set-pieces (stat counters, animated maps, data-viz) via HyperFrames; titles and lower thirds.",
+      "tools": [
+        "start_comfyui"
+      ],
+      "extra_mcp": [
+        "kinocut"
+      ],
+      "skills": [
+        "hyperframes",
+        "hyperframes-core",
+        "hyperframes-animation",
+        "hyperframes-keyframes",
+        "motion-graphics",
+        "typography-motion"
+      ]
+    },
+    {
+      "id": "sound-director",
+      "name": "Sound Director",
+      "model": "orchestrator",
+      "mirrors": [
+        "sound-director"
+      ],
+      "role": "What each place actually sounds like; ambience/SFX per shot; music energy arc vs the structural climax.",
+      "tools": [
+        "audio_critic",
+        "detect_shots",
+        "start_comfyui"
+      ],
+      "skills": [
+        "sound-design-craft"
+      ]
+    },
+    {
+      "id": "audio-mix",
+      "name": "Audio Mix and Restoration",
+      "model": "orchestrator",
+      "mirrors": [
+        "audio-mix-engineer",
+        "audio-restoration"
+      ],
+      "role": "Clean the source, then balance, duck and master to -14 LUFS / -1 dBTP / LRA 6-11.",
+      "tools": [
+        "master_audio",
+        "audio_critic",
+        "transcribe",
+        "check_vo_timing"
+      ],
+      "extra_mcp": [
+        "davinci-resolve"
+      ],
+      "skills": [
+        "sound-design-craft"
+      ]
+    },
+    {
+      "id": "generative",
+      "name": "Generative Artist",
+      "model": "orchestrator",
+      "mirrors": [
+        "comfyui-sfx-engineer",
+        "generative-video-artist"
+      ],
+      "role": "Creates what cannot be filmed or found: Woosh SFX/V2A ambience, ACE-Step music, LTX/Wan video, RIFE retimes, in ComfyUI.",
+      "tools": [
+        "audio_critic",
+        "start_comfyui"
+      ],
+      "extra_mcp": [
+        "comfyui"
+      ],
+      "skills": [
+        "comfyui-api",
+        "comfyui-video-pipeline",
+        "comfyui-workflow-builder",
+        "comfyui-troubleshooter",
+        "comfyui-prompt-engineer"
+      ]
+    },
+    {
+      "id": "thumbnail",
+      "name": "Thumbnail Art Director",
+      "model": "orchestrator",
+      "mirrors": [
+        "thumbnail-art-director"
+      ],
+      "role": "Real same-day DNG/JPEG stills developed into a thumbnail that reads at 168px.",
+      "tools": [
+        "web_search",
+        "web_fetch"
+      ],
+      "skills": []
+    },
+    {
+      "id": "packaging",
+      "name": "Packaging Director",
+      "model": "orchestrator",
+      "mirrors": [
+        "youtube-packaging-director"
+      ],
+      "role": "Titles, hooks, chapters, descriptions, end screens for a nearly finished video.",
+      "tools": [
+        "detect_shots",
+        "transcribe",
+        "web_search",
+        "web_fetch"
+      ],
+      "extra_mcp": [
+        "yt-dlp",
+        "wikipedia"
+      ],
+      "skills": [
+        "trends-audience-analysis"
+      ]
+    },
+    {
+      "id": "screening-critic",
+      "name": "Screening Room Critic",
+      "model": "orchestrator",
+      "mirrors": [
+        "screening-room-critic"
+      ],
+      "role": "Watches the real render as a first-time viewer, section by section, against each section's own job.",
+      "tools": [
+        "detect_shots",
+        "frame_defect_scan",
+        "scrim_scan",
+        "delivery_gate",
+        "temporal_scan"
+      ],
+      "skills": [
+        "narrative-structure",
+        "video-rhythm"
+      ]
+    },
+    {
+      "id": "delivery-qc",
+      "name": "Delivery QC and Finishing",
+      "model": "orchestrator",
+      "mirrors": [
+        "finishing-online-editor"
+      ],
+      "role": "Last gate: qc_render, master audio numbers, DNxHR HQX 10-bit 4K read-back. Nothing ships on assertion.",
+      "tools": [
+        "qc_render",
+        "deliver_dnxhr",
+        "color_pipeline_check",
+        "frame_defect_scan",
+        "repeat_shot_audit",
+        "scrim_scan",
+        "delivery_gate",
+        "temporal_scan"
+      ],
+      "skills": [
+        "video-delivery-qc",
+        "cinema-mastering-pro"
+      ]
+    },
+    {
+      "id": "clearance",
+      "name": "Archival and Clearance",
+      "model": "orchestrator",
+      "mirrors": [
+        "archival-clearance-researcher"
+      ],
+      "role": "Fact-checks every claim with a real source; clears music/footage rights (LEGION folder = never).",
+      "tools": [
+        "transcribe",
+        "web_search",
+        "web_fetch"
+      ],
+      "skills": [],
+      "extra_mcp": [
+        "wikipedia"
+      ]
+    },
+    {
+      "id": "shorts",
+      "name": "Shorts Editor",
+      "model": "orchestrator",
+      "mirrors": [
+        "social-short-form-editor"
+      ],
+      "role": "Vertical cut-downs of long-form (channel data: long-form is 5x more watch-hour efficient, shorts are support).",
+      "tools": [
+        "detect_shots",
+        "flight_quality"
+      ],
+      "extra_mcp": [
+        "kinocut"
+      ],
+      "skills": [
+        "video-rhythm"
+      ]
+    },
+    {
+      "id": "vision-inspector",
+      "name": "Vision Inspector",
+      "model": "orchestrator",
+      "mirrors": [],
+      "new_seat": true,
+      "role": "NEW SEAT. Whole-runtime frame inspection with two independent vision models: scrim, overlapping text, burned-in narration paragraph, crops, black frames. Reports timestamps, never 'looks fine'.",
+      "tools": [
+        "frame_defect_scan",
+        "detect_shots",
+        "scrim_scan",
+        "temporal_scan"
+      ],
+      "skills": [
+        "video-delivery-qc"
+      ]
+    },
+    {
+      "id": "continuity-auditor",
+      "name": "Continuity Auditor",
+      "model": "orchestrator",
+      "mirrors": [],
+      "new_seat": true,
+      "role": "NEW SEAT. Objective repeat-shot audit: TransNetV2 shot boundaries (catches dissolves) + perceptual hashing across the whole runtime, each candidate confirmed with vision_qc before it is called a defect.",
+      "tools": [
+        "repeat_shot_audit",
+        "detect_shots"
+      ],
+      "skills": [
+        "repeat-framing-audit"
+      ]
+    },
+    {
+      "id": "footage-librarian",
+      "name": "Footage Librarian",
+      "model": "orchestrator",
+      "mirrors": [],
+      "new_seat": true,
+      "role": "NEW SEAT. Searchable index of the raw library (1.28 TB, D:/E:): per-clip captions from real frames + qwen3-embedding vectors, so 'find me a sunrise over the Bosna river with fog' returns real clips and timecodes.",
+      "tools": [
+        "index_footage",
+        "search_footage",
+        "flight_quality"
+      ],
+      "skills": []
+    }
+  ],
+  "common_mcp": [
+    "crew-memory"
+  ]
+}
