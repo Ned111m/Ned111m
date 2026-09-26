@@ -465,6 +465,7 @@ def _spawn_in(cwd: Path, cmd: list[str]) -> None:
 SAME_SHOT_FAIL, SAME_SHOT_WARN = 0.93, 0.88
 CREW_ML_PY = r"C:\AI\crew-ml\.venv\Scripts\python.exe"
 SAME_SHOT_PY = r"C:\AI\crew-ml\same_shot.py"
+SYNC_GRID_PY = r"C:\AI\crew-ml\sync_grid.py"
 
 
 def _same_shot(video: str, pairs: list) -> list:
@@ -499,6 +500,56 @@ def temporal_scan(video: str) -> dict:
     A local video LLM (Qwen3-VL-8B) caught 0/7 on the same clips and was rejected. Run it via start_job."""
     from maglaj_crew import temporal
     return temporal.scan(video, detect_shots(video).get("shots", []))
+
+
+# ---------------------------------------------------------------- music <-> picture sync audit
+@mcp.tool()
+def sync_audit(video: str, music: str = "", events: list[dict] | None = None, sfx_stem: str = "",
+               tolerance_frames: int = 2) -> dict:
+    """How far every cut, graphic event and SFX hit lands from the music's beats and downbeats, in FRAMES.
+    music: the music bed file (best) or empty to use the video's own mixed audio. events: optional
+    [{"t": seconds, "kind": "gfx_in|gfx_out|transition|ramp|text", "label": "..."}] taken from the composition, which
+    knows exact times. sfx_stem: optional SFX-only stem; its onsets are audited too. Verdict per event:
+    ON (<= tolerance), NEAR-MISS (off by more than tolerance but less than 1/4 beat: reads as sloppy, a defect) or
+    OFF-GRID (>= 1/4 beat: a free placement, fine if intended). Beats via beat_this (measured best); cuts via TransNetV2.
+    Run via start_job for long videos."""
+    fps_s = ((probe(video).get("video") or {}).get("r_frame_rate") or "30")
+    try:
+        num, den = (str(fps_s).split("/") + ["1"])[:2]; fps = float(num) / float(den or 1)
+    except Exception:
+        fps = 30.0
+    args = [CREW_ML_PY, SYNC_GRID_PY, music or video] + (["--sfx", sfx_stem] if sfx_stem else [])
+    from maglaj_crew.gpulock import gpu_lock
+    with gpu_lock(f"sync_grid pid {os.getpid()}"):
+        r = subprocess.run(args, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=1800)
+    if r.returncode != 0:
+        raise RuntimeError(f"sync_grid (beat_this) failed: {r.stderr[-800:]}")
+    grid = json.loads(r.stdout.strip().splitlines()[-1])
+    import numpy as np
+    beats, downs = np.array(grid["beats"]), np.array(grid["downbeats"])
+    if len(beats) < 4:
+        return {"error": "fewer than 4 beats found: no steady beat to sync to (ambient/rubato music?)", "grid": grid}
+    period = float(np.median(np.diff(beats)))
+    evs = [{"t": s["start_s"], "kind": "cut", "label": ""} for s in detect_shots(video).get("shots", [])[1:]]
+    evs += [dict(e) for e in (events or [])]
+    evs += [{"t": t, "kind": "sfx", "label": ""} for t in grid.get("sfx_onsets", [])]
+    out, counts = [], {"ON": 0, "NEAR-MISS": 0, "OFF-GRID": 0}
+    for e in sorted(evs, key=lambda x: x["t"]):
+        t = float(e["t"])
+        if t < beats[0] - period or t > beats[-1] + period:
+            continue  # outside the music
+        db = beats[np.argmin(np.abs(beats - t))]; off_b = (t - db) * fps
+        dd = downs[np.argmin(np.abs(downs - t))] if len(downs) else db; off_d = (t - dd) * fps
+        a = abs(off_b)
+        verdict = "ON" if a <= tolerance_frames else ("NEAR-MISS" if a < period * fps / 4 else "OFF-GRID")
+        counts[verdict] += 1
+        out.append({**e, "t": round(t, 3), "nearest_beat": round(float(db), 3), "off_beat_frames": round(float(off_b), 1),
+                    "nearest_downbeat": round(float(dd), 3), "off_downbeat_frames": round(float(off_d), 1), "verdict": verdict})
+    n = max(1, sum(counts.values()))
+    return {"fps": round(fps, 3), "bpm": round(60 / period, 1), "beats": len(beats), "downbeats": len(downs),
+            "counts": counts, "on_pct": round(100 * counts["ON"] / n, 1),
+            "near_misses": [x for x in out if x["verdict"] == "NEAR-MISS"][:40], "events": out[:300],
+            "rule": "Fix every NEAR-MISS: move it ON the beat (strong moments on the downbeat) or clearly OFF-GRID."}
 
 # ---------------------------------------------------------------- delivery gate (the crew's equivalent of delivery-gate.mjs)
 @mcp.tool()
@@ -538,7 +589,7 @@ def delivery_gate(video: str, frames: int = 24) -> dict:
 
 # ---------------------------------------------------------------- background jobs (long tools survive call timeouts)
 JOBS = Path.home() / ".maglaj-crew" / "jobs"; JOBS.mkdir(parents=True, exist_ok=True)
-LONG_TOOLS = {"temporal_scan", "qc_render", "deliver_dnxhr", "master_audio", "validate_sources", "color_pipeline_check", "flight_quality",
+LONG_TOOLS = {"sync_audit", "temporal_scan", "qc_render", "deliver_dnxhr", "master_audio", "validate_sources", "color_pipeline_check", "flight_quality",
               "transcribe", "audio_critic", "frame_defect_scan", "repeat_shot_audit", "index_footage", "detect_shots", "beat_grid",
               "delivery_gate", "scrim_scan"}
 
