@@ -528,6 +528,41 @@
         "transcribe"
       ],
       "skills": []
+    },
+    {
+      "id": "music-editor",
+      "name": "Music & Sync Editor",
+      "model": "orchestrator",
+      "mirrors": [
+        "music-editor"
+      ],
+      "role": "Sync map of the track, music edited on phrase boundaries, every cut/ramp/graphic/SFX placed on beats/downbeats and measured with sync_audit.",
+      "tools": [
+        "sync_audit",
+        "beat_grid",
+        "detect_shots"
+      ],
+      "skills": [
+        "video-rhythm",
+        "sound-design-craft"
+      ]
+    },
+    {
+      "id": "gfx-art-director",
+      "name": "GFX Art Director",
+      "model": "orchestrator",
+      "mirrors": [
+        "gfx-art-director"
+      ],
+      "role": "One graphics style guide per video (type, palette from the grade, safe areas, animation language); checks every built graphic on real frames.",
+      "tools": [
+        "frame_defect_scan"
+      ],
+      "skills": [
+        "typography-motion",
+        "motion-graphics",
+        "transitions-craft"
+      ]
     }
   ],
   "common_mcp": [
