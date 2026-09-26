@@ -8,7 +8,8 @@
     "start_job",
     "job_status",
     "crew_health",
-    "wait"
+    "wait",
+    "slop_check"
   ],
   "common_skills": [
     "sp-verification-before-completion",
@@ -564,6 +565,57 @@
         "typography-motion",
         "motion-graphics",
         "transitions-craft"
+      ]
+    },
+    {
+      "id": "vo-producer",
+      "name": "VO Producer",
+      "model": "orchestrator",
+      "mirrors": [
+        "vo-producer"
+      ],
+      "role": "Voice director: pronunciation lexicon, directed TTS read, take selection, pinned-language transcript diff, audio_critic.",
+      "tools": [
+        "transcribe",
+        "audio_critic",
+        "check_vo_timing"
+      ],
+      "skills": [
+        "sound-design-craft"
+      ]
+    },
+    {
+      "id": "ae-c4d-artist",
+      "name": "AE / C4D Technical Artist",
+      "model": "orchestrator",
+      "mirrors": [
+        "ae-c4d-technical-artist"
+      ],
+      "role": "Drives After Effects (ExtendScript + aerender), Cinema 4D (c4dpy + Commandline) and Media Encoder from scripts, to the gfx style guide.",
+      "tools": [
+        "frame_defect_scan"
+      ],
+      "skills": [
+        "after-effects",
+        "motion-graphics",
+        "typography-motion"
+      ]
+    },
+    {
+      "id": "publishing-manager",
+      "name": "Publishing & Community Manager",
+      "model": "orchestrator",
+      "mirrors": [
+        "publishing-community-manager"
+      ],
+      "role": "Upload package, publish time from channel data, comment reply drafts, 48h/7d reviews. Never publishes.",
+      "tools": [
+        "web_search",
+        "web_fetch"
+      ],
+      "skills": [],
+      "extra_mcp": [
+        "yt-dlp"
       ]
     }
   ],

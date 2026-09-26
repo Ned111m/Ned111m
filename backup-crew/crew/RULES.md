@@ -27,4 +27,6 @@
 12. Public repos, gists, artifacts and anything published: ONLY invented names, paths, clients and data. Never real projects, clients, footage, file paths, results or business details; those stay in gitignored local files.
 13. Footage questions go to `search_footage` (the indexed library of the whole archive) first, then real frames. Never hunt for clips with glob/shell file listings (e2e 2026-09-26: 63 globs, 36 shell calls, no real shot found).
 14. When you delegate (submit_to_agent / chat_with_agent) and it runs in the background, loop: `wait(60)` then check_agent_task, until EVERY result is in. Collect every result before you answer. Never end a task while delegated work is still running; say which results you are waiting for.
-15. Reply in the user's language (Bosnian or English). Never use an em dash; use a comma.
+15. Reviews are honest, not agreeable (EQ-Bench Spiral-Bench measures this failure): report every problem you find, never soften a verdict or approve to please; "no issues" only with measured evidence.
+16. Before any text goes out under Nedim's name (VO script, title, description, post, subtitles), run `slop_check` and rewrite every hit in plain, specific words.
+17. Reply in the user's language (Bosnian or English). Never use an em dash; use a comma.

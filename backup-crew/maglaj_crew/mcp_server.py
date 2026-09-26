@@ -561,6 +561,18 @@ def preproduction(ideas: list[str], out_dir: str, brief: str = "") -> dict:
     from maglaj_crew import pipeline
     return pipeline.preproduction(ideas, out_dir, brief)
 
+
+# ---------------------------------------------------------------- outward text: AI-ism check
+@mcp.tool()
+def slop_check(text: str = "", path: str = "", language: str = "en") -> dict:
+    """Check VO scripts, titles, descriptions and posts for AI-isms before anything is published under Nedim's name.
+    Uses the public slop lists behind EQ-Bench's Slop Score plus language-independent patterns (the em dash is always a
+    FAIL). language 'en' runs the word/phrase lists; any other language runs the pattern checks only.
+    Verdict PASS / WARN (rewrite the hits) / FAIL (em dash or >= 8 hits per 1000 words)."""
+    from maglaj_crew import slop
+    body = text or Path(path).read_text(encoding="utf-8")
+    return slop.check(body, _PATHS.get("slop_dir", r"C:\AI\crew-ml\slop"), language)
+
 # ---------------------------------------------------------------- delivery gate (the crew's equivalent of delivery-gate.mjs)
 @mcp.tool()
 def delivery_gate(video: str, frames: int = 24) -> dict:
