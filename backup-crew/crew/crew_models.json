@@ -1,0 +1,9 @@
+{
+  "_note": "FINAL 2026-09-24 (eval/: 150 real-tool agent episodes + 146 real-frame vision questions). Agent: qwen3.6:35b 30/30 at 8 s, gemma4:26b 30/30 at 12 s, qwen3.8:27b 29/30 at 48 s and called delete_file once (so it only ANSWERS vision questions, never drives tools), abliterated 35b 28/30 + delete_file once (removed), qwen3-coder:30b 14/30 (not fit for the code seat). Vision: qwen3.8:27b 131/146; pair qwen3.8:27b + qwen3-vl = 98% recall, 0 false alarms.",
+  "orchestrator": "qwen3.6:35b",
+  "vision_primary": "qwen3.8:27b",
+  "vision_second": "qwen3-vl:latest",
+  "vision_fast_sampler": "qwen3-vl:latest",
+  "code": "qwen3.6:35b",
+  "embedding": "qwen3-embedding:latest"
+}

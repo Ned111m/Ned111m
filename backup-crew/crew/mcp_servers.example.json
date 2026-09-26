@@ -1,0 +1,72 @@
+{
+  "_doc": "Example MCP server definitions for every backup-crew frontend (fictional paths). Copy to crew/local/mcp_servers.json and point the paths at your own installs.",
+  "davinci-resolve": {
+    "description": "DaVinci Resolve scripting API (only resolve-operator writes; others read)",
+    "command": "C:\\Projects\\ExampleVideo\\davinci-resolve-mcp\\venv\\Scripts\\python.exe",
+    "args": [
+      "C:\\Projects\\ExampleVideo\\davinci-resolve-mcp\\src\\server.py"
+    ],
+    "env": {
+      "RESOLVE_SCRIPT_API": "C:\\ProgramData\\Blackmagic Design\\DaVinci Resolve\\Support\\Developer\\Scripting",
+      "RESOLVE_SCRIPT_LIB": "C:\\Program Files\\Blackmagic Design\\DaVinci Resolve\\fusionscript.dll",
+      "PYTHONPATH": "C:\\ProgramData\\Blackmagic Design\\DaVinci Resolve\\Support\\Developer\\Scripting\\Modules",
+      "PYTHONHOME": "C:\\Users\\Example\\AppData\\Local\\Programs\\Python\\Python310"
+    }
+  },
+  "kinocut": {
+    "description": "kinocut video editing MCP (ffmpeg, hyperframes, QC)",
+    "command": "uvx",
+    "args": [
+      "--from",
+      "kinocut",
+      "kino"
+    ],
+    "env": {
+      "PYTHONIOENCODING": "utf-8",
+      "PYTHONUTF8": "1"
+    }
+  },
+  "comfyui": {
+    "description": "ComfyUI bridge (needs ComfyUI on 8188 and the bridge on 9000 running)",
+    "url": "http://127.0.0.1:9000/mcp"
+  },
+  "yt-dlp": {
+    "description": "YouTube metadata, transcripts and comments via yt-dlp",
+    "command": "npx",
+    "args": [
+      "-y",
+      "@kevinwatt/yt-dlp-mcp"
+    ]
+  },
+  "wikipedia": {
+    "description": "Wikipedia via Docker MCP gateway (profile crew-research), read-only tools; fact-checking with a source",
+    "command": "docker",
+    "args": [
+      "mcp",
+      "gateway",
+      "run",
+      "--profile",
+      "crew-research",
+      "--tools",
+      "search_wikipedia,get_summary,get_article,extract_key_facts,get_coordinates,summarize_article_for_query,get_sections"
+    ],
+    "env": {
+      "ProgramData": "C:\\ProgramData",
+      "LOCALAPPDATA": "C:\\Users\\Example\\AppData\\Local",
+      "ProgramFiles": "C:\\Program Files",
+      "APPDATA": "C:\\Users\\Example\\AppData\\Roaming",
+      "USERPROFILE": "C:\\Users\\Example"
+    }
+  },
+  "crew-memory": {
+    "description": "Shared crew memory (Hindsight, bank maglaj-crew): Nedim's rules, review decisions, lessons. Read-and-add only; deleting is Nedim's.",
+    "url": "http://127.0.0.1:8888/mcp/maglaj-crew/",
+    "allow_tools": [
+      "recall",
+      "reflect",
+      "retain",
+      "list_memories",
+      "get_memory"
+    ]
+  }
+}
