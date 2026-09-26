@@ -322,7 +322,7 @@ def index_footage(folder: str, recursive: bool = True, limit: int = 200) -> dict
         for line in LIB.read_text(encoding="utf-8").splitlines():
             e = json.loads(line); seen[e["path"]] = e["sig"]
     files = [p for p in (Path(folder).rglob("*") if recursive else Path(folder).iterdir()) if p.suffix.lower() in VIDEO_EXT]
-    done, skipped = [], 0
+    done, skipped, pending = [], 0, []
     with LIB.open("a", encoding="utf-8") as fh:
         for p in files:
             if len(done) >= limit:
@@ -341,10 +341,30 @@ def index_footage(folder: str, recursive: bool = True, limit: int = 200) -> dict
             cap = _ask(MODELS["vision_fast_sampler"], "These are 3 frames (20%, 50%, 80%) from one raw drone/action-cam clip. For a video editor's "
                        "search index, describe in one paragraph: subject and place type, landmarks, time of day and light, weather, season, "
                        "camera motion between the frames, notable objects or people.", imgs, think=False)
-            e = {"path": str(p), "sig": sig, "duration_s": round(dur, 2), "caption": cap, "embedding": _embed(cap)}
-            fh.write(json.dumps(e, ensure_ascii=False) + "\n"); fh.flush()
+            pending.append({"path": str(p), "sig": sig, "duration_s": round(dur, 2), "caption": cap})
             done.append({"path": str(p), "caption": cap[:160]})
+            if len(pending) >= INDEX_BATCH:
+                _flush_index(fh, pending)
+        _flush_index(fh, pending)
     return {"indexed": len(done), "skipped_unchanged": skipped, "found": len(files), "library": str(LIB), "sample": done[:5]}
+
+
+# Captions and embeddings come from two different models. Interleaving them per clip made Ollama swap models on every
+# clip (measured 2026-09-26: ~1-2 clips/min). Caption a batch with the vision model, then embed the whole batch in ONE
+# call, so each model loads once per batch.
+INDEX_BATCH = 25
+
+
+def _flush_index(fh, pending: list) -> None:
+    if not pending:
+        return
+    r = requests.post(f"{OLLAMA}/api/embed", json={"model": MODELS["embedding"], "input": [e["caption"] for e in pending]},
+                      timeout=1800).json()
+    for e, v in zip(pending, r["embeddings"]):
+        e["embedding"] = v
+        fh.write(json.dumps(e, ensure_ascii=False) + "\n")
+    fh.flush()
+    pending.clear()
 
 
 @mcp.tool()
