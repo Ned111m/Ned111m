@@ -31,22 +31,33 @@ def _agent_id(name: str) -> str:
     return next(a["id"] for a in agents if a["name"] == name)
 
 
+STALL_S = 600  # no SSE event for 10 min = the seat is stuck (seen 2026-09-26: an MCP reload killed its tool call)
+
+
 def _chat(agent: str, session: str, text: str, timeout: int = 3600) -> str:
     body = {"input": [{"role": "user", "content": [{"type": "text", "text": text}]}], "session_id": session,
             "user_id": "pipeline", "channel": "console", "stream": True}
     out = []
-    with requests.post(_api() + "/console/chat", json=body, headers={"X-Agent-Id": _agent_id(agent)}, stream=True, timeout=timeout) as r:
-        for line in r.iter_lines(decode_unicode=True):
-            if not line or not line.startswith("data:"):
-                continue
-            try:
-                ev = json.loads(line[5:].strip())
-            except json.JSONDecodeError:
-                continue
-            if ev.get("object") == "content" and ev.get("type") == "text" and ev.get("delta"):
-                out.append(ev.get("text", ""))
-            if ev.get("object") == "response" and ev.get("status") in ("completed", "failed", "canceled"):
-                break
+    try:
+        r = requests.post(_api() + "/console/chat", json=body, headers={"X-Agent-Id": _agent_id(agent)}, stream=True,
+                          timeout=(30, STALL_S))  # read timeout = max silence between events
+    except requests.RequestException as e:
+        return f"[stalled: {type(e).__name__}]"
+    with r:
+        try:
+            for line in r.iter_lines(decode_unicode=True):
+                if not line or not line.startswith("data:"):
+                    continue
+                try:
+                    ev = json.loads(line[5:].strip())
+                except json.JSONDecodeError:
+                    continue
+                if ev.get("object") == "content" and ev.get("type") == "text" and ev.get("delta"):
+                    out.append(ev.get("text", ""))
+                if ev.get("object") == "response" and ev.get("status") in ("completed", "failed", "canceled"):
+                    break
+        except requests.RequestException as e:
+            out.append(f"\n[stalled after {STALL_S}s without events: {type(e).__name__}]")
     return "".join(out)
 
 

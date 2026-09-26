@@ -37,6 +37,22 @@ If a tool your brief names does not exist here, say so in one sentence and use t
 RULES = (REPO / "crew" / "RULES.md").read_text(encoding="utf-8")
 
 
+
+def _busy_crew_jobs() -> list:
+    """Reprovisioning reloads every seat's MCP drivers and kills in-flight tool calls (2026-09-26: it hung a running
+    preproduction job). Refuse while crew jobs run, unless --force."""
+    import glob, os, time
+    busy = []
+    for f in glob.glob(os.path.expanduser("~/.maglaj-crew/jobs/*.json")):
+        try:
+            d = json.load(open(f, encoding="utf-8"))
+        except Exception:
+            continue
+        if d.get("status") in ("queued", "waiting_gpu", "running") and time.time() - d.get("heartbeat", d.get("created", 0)) < 120:
+            busy.append(f"{d.get('job_id')} {d.get('tool')}")
+    return busy
+
+
 def s(method: str, path: str, **kw):
     r = requests.request(method, API + path, timeout=120, **kw)
     if r.status_code >= 400:
@@ -180,7 +196,13 @@ def settle_policies(report: list[dict], rounds: int = 5) -> int:
 
 
 if __name__ == "__main__":
-    rep = provision(set(sys.argv[1:]) or None)
+    args = [a for a in sys.argv[1:] if a != "--force"]
+    busy = _busy_crew_jobs()
+    if busy and "--force" not in sys.argv:
+        print(json.dumps({"refused": "crew jobs are running; reprovisioning would kill their tool calls", "busy": busy[:10],
+                          "hint": "wait for them, or pass --force"}))
+        sys.exit(2)
+    rep = provision(set(args) or None)
     left = settle_policies(rep)
     print(json.dumps({"cards_not_allow": left}))
     sys.exit(1 if left else 0)
