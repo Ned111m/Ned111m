@@ -467,7 +467,7 @@
     },
     {
       "id": "footage-librarian",
-      "name": "Footage Librarian",
+      "name": "Assistant Editor / Footage Librarian",
       "model": "orchestrator",
       "mirrors": [
         "footage-librarian"
