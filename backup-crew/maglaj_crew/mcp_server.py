@@ -551,6 +551,16 @@ def sync_audit(video: str, music: str = "", events: list[dict] | None = None, sf
             "near_misses": [x for x in out if x["verdict"] == "NEAR-MISS"][:40], "events": out[:300],
             "rule": "Fix every NEAR-MISS: move it ON the beat (strong moments on the downbeat) or clearly OFF-GRID."}
 
+
+# ---------------------------------------------------------------- pre-production pipeline (order in code, craft in seats)
+@mcp.tool()
+def preproduction(ideas: list[str], out_dir: str, brief: str = "") -> dict:
+    """Pick one idea from REAL channel data, map real footage coverage, write the story treatment with a real clip per
+    beat. Stage order, waiting and output checks are enforced in code (maglaj_crew/pipeline.py). Run via start_job;
+    it calls the Content Strategist, Assistant Editor and Storyteller seats in turn. Result: story_treatment.md in out_dir."""
+    from maglaj_crew import pipeline
+    return pipeline.preproduction(ideas, out_dir, brief)
+
 # ---------------------------------------------------------------- delivery gate (the crew's equivalent of delivery-gate.mjs)
 @mcp.tool()
 def delivery_gate(video: str, frames: int = 24) -> dict:
@@ -589,7 +599,7 @@ def delivery_gate(video: str, frames: int = 24) -> dict:
 
 # ---------------------------------------------------------------- background jobs (long tools survive call timeouts)
 JOBS = Path.home() / ".maglaj-crew" / "jobs"; JOBS.mkdir(parents=True, exist_ok=True)
-LONG_TOOLS = {"sync_audit", "temporal_scan", "qc_render", "deliver_dnxhr", "master_audio", "validate_sources", "color_pipeline_check", "flight_quality",
+LONG_TOOLS = {"preproduction", "sync_audit", "temporal_scan", "qc_render", "deliver_dnxhr", "master_audio", "validate_sources", "color_pipeline_check", "flight_quality",
               "transcribe", "audio_critic", "frame_defect_scan", "repeat_shot_audit", "index_footage", "detect_shots", "beat_grid",
               "delivery_gate", "scrim_scan"}
 

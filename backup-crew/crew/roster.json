@@ -32,7 +32,8 @@
         "deliver_dnxhr",
         "scrim_scan",
         "delivery_gate",
-        "temporal_scan"
+        "temporal_scan",
+        "preproduction"
       ],
       "skills": [
         "sp-writing-plans",

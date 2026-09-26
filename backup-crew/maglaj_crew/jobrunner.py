@@ -17,8 +17,11 @@ from pathlib import Path
 
 JOBS = Path.home() / ".maglaj-crew" / "jobs"
 HEARTBEAT_S = 15
-TIMEOUT_S = {"deliver_dnxhr": 4 * 3600, "master_audio": 3600, "index_footage": 6 * 3600}
+TIMEOUT_S = {"preproduction": 3 * 3600, "deliver_dnxhr": 4 * 3600, "master_audio": 3600, "index_footage": 6 * 3600}
 DEFAULT_TIMEOUT_S = 2 * 3600
+# Tools that only orchestrate other agents must NOT hold the GPU lock: the seats they call use the GPU themselves
+# (vision_qc etc.) from other processes and would wait on this job forever (a deadlock).
+NO_GPU_LOCK = {"preproduction"}
 
 
 _WRITE_LOCK = threading.Lock()
@@ -52,9 +55,10 @@ def main(job_id: str) -> None:
     threading.Thread(target=beat, daemon=True).start()
 
     from maglaj_crew.gpulock import gpu_lock
+    from contextlib import nullcontext
     try:
-        with gpu_lock(f"job {job_id} {spec['tool']}",
-                      on_wait=lambda h: _write(job_id, status="waiting_gpu", gpu_held_by=h.get("label"))):
+        with (nullcontext() if spec["tool"] in NO_GPU_LOCK else gpu_lock(f"job {job_id} {spec['tool']}",
+                      on_wait=lambda h: _write(job_id, status="waiting_gpu", gpu_held_by=h.get("label")))):
             start = time.time()
             _write(job_id, status="running", started=start, gpu_held_by=None)
 
