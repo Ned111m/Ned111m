@@ -1,0 +1,10 @@
+{
+  "name": "prores-proxy-edit",
+  "description": "Edit proxy for Resolve/Premiere: ProRes Proxy 10-bit, max 1080p, keeps source timecode.",
+  "container": "mov",
+  "video": ["-c:v", "prores_ks", "-profile:v", "0", "-vendor", "apl0", "-pix_fmt", "yuv422p10le"],
+  "audio": ["-c:a", "pcm_s16le", "-ar", "48000"],
+  "extra": ["-map_metadata", "0"],
+  "maxHeight": 1080,
+  "loudnorm": null
+}

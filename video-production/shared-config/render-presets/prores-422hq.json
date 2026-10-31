@@ -1,0 +1,9 @@
+{
+  "name": "prores-422hq",
+  "description": "Mezzanine / Resolve round-trip. ProRes 422 HQ 10-bit 4:2:2, PCM 24-bit 48 kHz.",
+  "container": "mov",
+  "video": ["-c:v", "prores_ks", "-profile:v", "3", "-vendor", "apl0", "-pix_fmt", "yuv422p10le"],
+  "audio": ["-c:a", "pcm_s24le", "-ar", "48000"],
+  "extra": [],
+  "loudnorm": null
+}

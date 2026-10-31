@@ -1,0 +1,14 @@
+{
+  "name": "h264-nvenc-web-1080",
+  "description": "Instagram/TikTok/web delivery: H.264 High 8-bit NVENC CQ 20, max 1080p, AAC 256k, -14 LUFS.",
+  "container": "mp4",
+  "hwaccel": ["-hwaccel", "cuda"],
+  "video": ["-c:v", "h264_nvenc", "-preset", "p6", "-tune", "hq", "-rc", "vbr", "-cq", "20", "-b:v", "0",
+            "-maxrate", "25M", "-bufsize", "50M", "-spatial-aq", "1", "-temporal-aq", "1", "-rc-lookahead", "32",
+            "-bf", "3", "-pix_fmt", "yuv420p", "-profile:v", "high",
+            "-color_primaries", "bt709", "-color_trc", "bt709", "-colorspace", "bt709"],
+  "audio": ["-c:a", "aac", "-b:a", "256k", "-ar", "48000"],
+  "extra": ["-movflags", "+faststart"],
+  "maxHeight": 1080,
+  "loudnorm": { "I": -14, "TP": -1, "LRA": 11 }
+}

@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dronmaglaj.local/schemas/timeline-manifest.schema.json",
+  "title": "Timeline assembly manifest (edit decision list) -> DaVinci Resolve / FFmpeg",
+  "type": "object",
+  "required": ["version", "name", "fps", "width", "height", "clips"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "const": 1 },
+    "name": { "type": "string", "minLength": 1 },
+    "fps": { "$ref": "_defs.schema.json#/$defs/fps" },
+    "width": { "type": "integer", "minimum": 16 },
+    "height": { "type": "integer", "minimum": 16 },
+    "startTimecode": { "type": "string", "pattern": "^\\d{2}:\\d{2}:\\d{2}[:;]\\d{2}$", "default": "01:00:00:00" },
+    "gradeDrx": { "type": ["string", "null"], "description": "DRX still applied to every clip (CST node graph)." },
+    "clips": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["file", "inFrame", "outFrame"],
+        "additionalProperties": false,
+        "properties": {
+          "file": { "$ref": "_defs.schema.json#/$defs/path" },
+          "inFrame": { "$ref": "_defs.schema.json#/$defs/frame" },
+          "outFrame": { "description": "Exclusive source out-point.", "$ref": "_defs.schema.json#/$defs/frame" },
+          "track": { "type": "integer", "minimum": 1, "default": 1 },
+          "gamma": { "enum": ["hlg", "dlog-m", "rec709"] },
+          "gradeDrx": { "type": ["string", "null"] },
+          "note": { "type": "string" }
+        }
+      }
+    },
+    "markers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["frame", "name"],
+        "properties": {
+          "frame": { "$ref": "_defs.schema.json#/$defs/frame" },
+          "name": { "type": "string" },
+          "color": { "enum": ["Blue", "Cyan", "Green", "Yellow", "Red", "Pink", "Purple", "Fuchsia", "Rose", "Lavender", "Sky", "Mint", "Lemon", "Sand", "Cocoa", "Cream"] },
+          "note": { "type": "string" },
+          "duration": { "type": "integer", "minimum": 1 }
+        }
+      }
+    }
+  }
+}

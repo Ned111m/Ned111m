@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dronmaglaj.local/schemas/render-preset.schema.json",
+  "title": "FFmpeg render preset",
+  "type": "object",
+  "required": ["name", "description", "container", "video", "audio"],
+  "additionalProperties": false,
+  "properties": {
+    "name": { "type": "string" },
+    "description": { "type": "string" },
+    "container": { "enum": ["mov", "mp4", "mkv"] },
+    "hwaccel": { "type": "array", "items": { "type": "string" }, "description": "Input-side args, dropped on CPU fallback." },
+    "video": { "type": "array", "items": { "type": "string" } },
+    "audio": { "type": "array", "items": { "type": "string" } },
+    "extra": { "type": "array", "items": { "type": "string" } },
+    "maxHeight": { "type": "integer" },
+    "loudnorm": {
+      "type": ["object", "null"],
+      "properties": { "I": { "type": "number" }, "TP": { "type": "number" }, "LRA": { "type": "number" } }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "hevc-nvenc-youtube-4k",
+  "description": "YouTube master upload: HEVC Main10 NVENC, CQ 18 VBR capped 120 Mb/s, BT.709 tagged, AAC 384k, -14 LUFS / -1 dBTP.",
+  "container": "mp4",
+  "hwaccel": ["-hwaccel", "cuda"],
+  "video": ["-c:v", "hevc_nvenc", "-preset", "p7", "-tune", "hq", "-rc", "vbr", "-cq", "18", "-b:v", "0",
+            "-maxrate", "120M", "-bufsize", "240M", "-multipass", "fullres", "-spatial-aq", "1", "-temporal-aq", "1",
+            "-aq-strength", "8", "-rc-lookahead", "32", "-bf", "3", "-b_ref_mode", "middle",
+            "-pix_fmt", "p010le", "-profile:v", "main10", "-tag:v", "hvc1",
+            "-color_primaries", "bt709", "-color_trc", "bt709", "-colorspace", "bt709"],
+  "audio": ["-c:a", "aac", "-b:a", "384k", "-ar", "48000"],
+  "extra": ["-movflags", "+faststart"],
+  "loudnorm": { "I": -14, "TP": -1, "LRA": 11 }
+}

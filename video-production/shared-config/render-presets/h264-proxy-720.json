@@ -1,0 +1,12 @@
+{
+  "name": "h264-proxy-720",
+  "description": "Lightweight review/Remotion <OffthreadVideo> source: H.264 720p, all-intra-ish GOP 12 for fast seeking.",
+  "container": "mp4",
+  "hwaccel": ["-hwaccel", "cuda"],
+  "video": ["-c:v", "h264_nvenc", "-preset", "p2", "-rc", "vbr", "-cq", "24", "-b:v", "0", "-g", "12", "-bf", "0",
+            "-pix_fmt", "yuv420p", "-color_primaries", "bt709", "-color_trc", "bt709", "-colorspace", "bt709"],
+  "audio": ["-c:a", "aac", "-b:a", "160k", "-ar", "48000"],
+  "extra": ["-movflags", "+faststart"],
+  "maxHeight": 720,
+  "loudnorm": null
+}

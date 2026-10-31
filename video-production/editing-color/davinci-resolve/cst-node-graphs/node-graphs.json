@@ -1,0 +1,54 @@
+{
+  "$comment": "Node-graph specs for the default colour pipeline. Resolve's API cannot create nodes: build each graph once by hand from this spec, Grab Still > Export as .drx next to this file, then resolve_assemble.py applies it to every clip.",
+  "projectSettings": {
+    "colorScience": "DaVinci YRGB",
+    "timelineColorSpace": "DaVinci WG/Intermediate",
+    "outputColorSpace": "Rec.709 Gamma 2.4",
+    "note": "Use Rec.709-A instead of Gamma 2.4 only for Mac/QuickTime-viewed web deliverables (compensates the 1.96 display gamma tag)."
+  },
+  "graphs": {
+    "DLogM_to_709": {
+      "drx": "DLogM_to_709.drx",
+      "source": "DJI Mini 4 Pro / Osmo Action 6 D-Log M",
+      "nodes": [
+        { "n": 1, "label": "IN CST", "tool": "Color Space Transform",
+          "input": { "colorSpace": "DJI D-Gamut", "gamma": "DJI D-Log M" },
+          "output": { "colorSpace": "DaVinci Wide Gamut", "gamma": "DaVinci Intermediate" },
+          "toneMapping": "None", "gamutMapping": "None",
+          "reason": "Linearise the camera log into the scene-referred working space; all following grades are exposure-linear." },
+        { "n": 2, "label": "EXPOSURE / WB", "tool": "HDR Wheels (Global) or Offset + Temp/Tint",
+          "reason": "Balance in a scene-referred space so stops behave identically across clips." },
+        { "n": 3, "label": "CONTRAST", "tool": "Contrast + Pivot (pivot 0.336 = DaVinci Intermediate mid-grey)",
+          "reason": "Pivot at working-space mid-grey keeps skin/foliage mids stable while shaping contrast." },
+        { "n": 4, "label": "SAT / HUE", "tool": "Color Slice or HSV sat curve",
+          "reason": "Foliage greens and sky blues from D-Log M are low saturation by design." },
+        { "n": 5, "label": "NR (optional)", "tool": "Spatial NR (Better, luma 4-6) — Studio only",
+          "reason": "1/1.3-inch sensors at ISO >= 400 show chroma noise in shadows; NR before the output CST." },
+        { "n": 6, "label": "OUT CST", "tool": "Color Space Transform",
+          "input": { "colorSpace": "DaVinci Wide Gamut", "gamma": "DaVinci Intermediate" },
+          "output": { "colorSpace": "Rec.709", "gamma": "Gamma 2.4" },
+          "toneMapping": "DaVinci (Adaptation 9, max input 10000 nits)", "gamutMapping": "Saturation Compression (knee 0.9, max 1.0)",
+          "reason": "Display render: compresses highlights and out-of-709 colours instead of clipping them." }
+      ]
+    },
+    "HLG_to_709": {
+      "drx": "HLG_to_709.drx",
+      "source": "DJI Mini 4 Pro HLG / Osmo Action 6 HLG (10-bit Rec.2100)",
+      "nodes": [
+        { "n": 1, "label": "IN CST", "tool": "Color Space Transform",
+          "input": { "colorSpace": "Rec.2100", "gamma": "Rec.2100 HLG" },
+          "output": { "colorSpace": "DaVinci Wide Gamut", "gamma": "DaVinci Intermediate" },
+          "toneMapping": "None", "gamutMapping": "None",
+          "reason": "HLG is display-referred-ish; mapping into DWG/Intermediate lets one grade stack serve both cameras." },
+        { "n": 2, "label": "EXPOSURE / WB", "tool": "HDR Wheels (Global)" },
+        { "n": 3, "label": "CONTRAST", "tool": "Contrast + Pivot 0.336" },
+        { "n": 4, "label": "SAT / HUE", "tool": "Color Slice" },
+        { "n": 5, "label": "OUT CST", "tool": "Color Space Transform",
+          "input": { "colorSpace": "DaVinci Wide Gamut", "gamma": "DaVinci Intermediate" },
+          "output": { "colorSpace": "Rec.709", "gamma": "Gamma 2.4" },
+          "toneMapping": "DaVinci", "gamutMapping": "Saturation Compression",
+          "reason": "Same output transform as D-Log M => matched look across sources." }
+      ]
+    }
+  }
+}

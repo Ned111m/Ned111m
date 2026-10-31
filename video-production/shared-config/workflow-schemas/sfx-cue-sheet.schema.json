@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dronmaglaj.local/schemas/sfx-cue-sheet.schema.json",
+  "title": "Frame-accurate SFX cue sheet (Remotion / Resolve markers -> FFmpeg SFX stem)",
+  "type": "object",
+  "required": ["version", "fps", "durationInFrames", "cues"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "const": 1 },
+    "fps": { "$ref": "_defs.schema.json#/$defs/fps" },
+    "durationInFrames": { "type": "integer", "minimum": 1 },
+    "sampleRate": { "type": "integer", "enum": [44100, 48000, 96000] },
+    "masterGainDb": { "type": "number", "maximum": 12 },
+    "cues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["frame", "file"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "frame": { "$ref": "_defs.schema.json#/$defs/frame" },
+          "file": { "$ref": "_defs.schema.json#/$defs/path" },
+          "align": {
+            "description": "Which point of the SFX lands on `frame`: start (whoosh lead-in), peak (impact/click), end (riser tail).",
+            "enum": ["start", "peak", "end"],
+            "default": "start"
+          },
+          "gainDb": { "type": "number", "minimum": -60, "maximum": 12, "default": 0 },
+          "pan": { "type": "number", "minimum": -1, "maximum": 1, "default": 0 },
+          "fadeOutMs": { "type": "number", "minimum": 0 },
+          "maxDurationMs": { "type": "number", "exclusiveMinimum": 0 },
+          "label": { "type": "string" }
+        }
+      }
+    }
+  }
+}
