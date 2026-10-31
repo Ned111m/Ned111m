@@ -1,0 +1,23 @@
+{
+  "name": "dron-maglaj-video-production",
+  "version": "2.5.0",
+  "private": true,
+  "description": "Global video-production skill repo: Remotion telemetry/GFX templates + Python/FFmpeg pipeline tools.",
+  "type": "module",
+  "scripts": {
+    "studio": "remotion studio motion-graphics/remotion/index.ts",
+    "render:telemetry": "remotion render motion-graphics/remotion/index.ts TelemetryOverlay out/telemetry.mov --codec=prores --prores-profile=4444 --pixel-format=yuva444p10le --image-format=png",
+    "typecheck": "tsc --noEmit",
+    "test": "python3 -m pytest -q tests"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.539",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "remotion": "4.0.539"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.2",
+    "typescript": "5.9.3"
+  }
+}

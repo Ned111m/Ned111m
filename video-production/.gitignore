@@ -1,0 +1,12 @@
+node_modules/
+out/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.tmp
+*.tmp.wav
+*.chain.wav
+*.wet.wav
+client_secret*.json
+token*.json

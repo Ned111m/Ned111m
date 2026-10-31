@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dronmaglaj.local/schemas/publish-metadata.schema.json",
+  "title": "Publishing metadata (YouTube Data API v3 videos.insert + captions + thumbnail)",
+  "type": "object",
+  "required": ["version", "video", "title", "description", "privacyStatus"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "const": 1 },
+    "video": { "$ref": "_defs.schema.json#/$defs/path" },
+    "title": { "type": "string", "minLength": 1, "maxLength": 100, "not": { "pattern": "[<>]" } },
+    "description": { "type": "string", "maxLength": 5000, "not": { "pattern": "[<>]" } },
+    "tags": {
+      "type": "array", "items": { "type": "string", "maxLength": 100 },
+      "description": "YouTube caps the combined tag length at 500 chars (checked in code)."
+    },
+    "categoryId": { "type": "string", "default": "19", "description": "19 = Travel & Events" },
+    "defaultLanguage": { "type": "string", "default": "bs" },
+    "defaultAudioLanguage": { "type": "string" },
+    "privacyStatus": { "enum": ["private", "unlisted", "public"] },
+    "publishAt": { "type": "string", "format": "date-time", "description": "Requires privacyStatus=private." },
+    "madeForKids": { "type": "boolean", "default": false },
+    "containsSyntheticMedia": { "type": "boolean", "description": "Altered/synthetic content disclosure (AI B-roll)." },
+    "license": { "enum": ["youtube", "creativeCommon"] },
+    "recordingDetails": {
+      "type": "object",
+      "properties": {
+        "locationDescription": { "type": "string" },
+        "latitude": { "type": "number" },
+        "longitude": { "type": "number" },
+        "recordingDate": { "type": "string" }
+      }
+    },
+    "chapters": {
+      "type": "array",
+      "description": "First chapter must start at 0; >= 3 chapters, each >= 10 s (YouTube rule, checked in code).",
+      "items": {
+        "type": "object",
+        "required": ["timeSec", "title"],
+        "properties": { "timeSec": { "type": "number", "minimum": 0 }, "title": { "type": "string" } }
+      }
+    },
+    "captions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["file", "language"],
+        "properties": {
+          "file": { "type": "string" }, "language": { "type": "string" },
+          "name": { "type": "string" }
+        }
+      }
+    },
+    "thumbnail": { "type": "string" },
+    "playlistId": { "type": "string" }
+  }
+}

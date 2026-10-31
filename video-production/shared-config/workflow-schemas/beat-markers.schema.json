@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dronmaglaj.local/schemas/beat-markers.schema.json",
+  "title": "Beat / cut-point markers (librosa -> Resolve / Remotion / FFmpeg)",
+  "type": "object",
+  "required": ["version", "audio", "fps", "tempoBpm", "beats"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "const": 1 },
+    "audio": { "type": "string" },
+    "fps": { "$ref": "_defs.schema.json#/$defs/fps" },
+    "sampleRate": { "type": "integer" },
+    "durationSec": { "type": "number" },
+    "tempoBpm": { "type": "number", "exclusiveMinimum": 0 },
+    "beatsPerBar": { "type": "integer", "minimum": 1 },
+    "downbeatPhase": { "type": "integer", "minimum": 0 },
+    "beats": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["index", "time", "frame", "strength", "downbeat"],
+        "additionalProperties": false,
+        "properties": {
+          "index": { "type": "integer", "minimum": 0 },
+          "time": { "type": "number", "minimum": 0 },
+          "frame": { "$ref": "_defs.schema.json#/$defs/frame" },
+          "strength": { "type": "number", "minimum": 0, "maximum": 1 },
+          "downbeat": { "type": "boolean" }
+        }
+      }
+    },
+    "onsets": {
+      "description": "Strong transients (non-beat-locked) for SFX impacts.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["time", "frame", "strength"],
+        "properties": {
+          "time": { "type": "number" },
+          "frame": { "type": "integer" },
+          "strength": { "type": "number" }
+        }
+      }
+    }
+  }
+}

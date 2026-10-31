@@ -1,0 +1,6 @@
+# vector-rag
+qdrant-client[fastembed]>=1.12
+# publishing
+google-api-python-client>=2.140
+google-auth-oauthlib>=1.2
+faster-whisper>=1.1

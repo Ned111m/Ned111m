@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dronmaglaj.local/schemas/asset-sidecar.schema.json",
+  "title": "Asset sidecar metadata (*.asset.json) — indexed by vector-rag",
+  "type": "object",
+  "required": ["version", "path", "kind", "durationSec", "tags"],
+  "properties": {
+    "version": { "const": 1 },
+    "path": { "type": "string" },
+    "kind": { "enum": ["sfx", "ambience", "music", "voiceover", "video", "image"] },
+    "durationSec": { "type": "number", "minimum": 0 },
+    "sampleRate": { "type": ["integer", "null"] },
+    "channels": { "type": ["integer", "null"] },
+    "loudness": {
+      "type": "object",
+      "properties": {
+        "integratedLufs": { "type": ["number", "null"] },
+        "truePeakDbtp": { "type": ["number", "null"] },
+        "lra": { "type": ["number", "null"] }
+      }
+    },
+    "spectral": {
+      "type": "object",
+      "properties": {
+        "centroidHz": { "type": ["number", "null"] },
+        "brightness": { "enum": ["dark", "neutral", "bright", null] }
+      }
+    },
+    "peakOffsetSec": { "type": ["number", "null"] },
+    "loopable": { "type": ["boolean", "null"] },
+    "tags": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "recording": {
+      "description": "Field-recording metadata (BWF/iXML-style).",
+      "type": "object",
+      "properties": {
+        "location": { "type": ["string", "null"] },
+        "lat": { "type": ["number", "null"] },
+        "lon": { "type": ["number", "null"] },
+        "recordedAt": { "type": ["string", "null"] },
+        "device": { "type": ["string", "null"] },
+        "notes": { "type": ["string", "null"] }
+      }
+    },
+    "video": {
+      "type": "object",
+      "properties": {
+        "width": { "type": "integer" },
+        "height": { "type": "integer" },
+        "fps": { "type": "string" },
+        "codec": { "type": "string" },
+        "pixFmt": { "type": "string" },
+        "colorTransfer": { "type": ["string", "null"] },
+        "colorPrimaries": { "type": ["string", "null"] },
+        "gamma": { "enum": ["hlg", "dlog-m", "rec709", "unknown"] }
+      }
+    }
+  }
+}
